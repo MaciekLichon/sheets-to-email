@@ -1,6 +1,8 @@
 import { google } from "googleapis";
 import { auth } from "@/auth";
 
+type SheetRow = Record<string, string | number | boolean | null>;
+
 export async function GET(req: Request) {
   const session = await auth();
   console.log(session);
@@ -26,5 +28,25 @@ export async function GET(req: Request) {
     range: "Arkusz1",
   });
 
-  return Response.json(resp.data.values ?? []);
+  const values = resp.data.values ?? [];
+
+  if (values.length === 0) {
+    return Response.json({
+      headers: [],
+      rows: [],
+    });
+  }
+
+  const headers = values[0];
+  const dataRows = values.slice(1);
+
+  const rows: SheetRow[] = dataRows.map((row) => {
+    const obj: SheetRow = {};
+    headers?.forEach((header, index) => {
+      obj[header] = row[index] ?? null;
+    });
+    return obj;
+  });
+
+  return Response.json({ headers, rows });
 }

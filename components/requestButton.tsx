@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-const RequestButton = () => {
+interface RequestButtonProps {
+  onGridDataUpdate: (data: any) => void;
+}
+
+const RequestButton = ({ onGridDataUpdate }: RequestButtonProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const extractSheetId = (url: string) => {
@@ -22,11 +26,13 @@ const RequestButton = () => {
 
     const data = await res.json();
     console.log(data);
+    onGridDataUpdate({ rowData: data.rows, headers: data.headers });
   };
 
   return (
     <div>
       <input
+        className="bg-white"
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
