@@ -1,13 +1,19 @@
 import { google } from "googleapis";
-import { NextApiRequest, NextApiResponse } from "next";
 import { auth } from "@/auth";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: Request) {
   const session = await auth();
   console.log(session);
 
   if (!session?.accessToken) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const sheetId = searchParams.get("sheetId");
+
+  if (!sheetId) {
+    return new Response("Bad Request: Missing sheetId", { status: 400 });
   }
 
   const googleAuth = new google.auth.OAuth2();
@@ -16,7 +22,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
   const sheets = google.sheets({ version: "v4", auth: googleAuth });
 
   const resp = await sheets.spreadsheets.values.get({
-    spreadsheetId: "1FUIDNzlAGWekCh9SfqnNflWG5Xe9-fOBoNFDjcbLjPk",
+    spreadsheetId: sheetId,
     range: "Arkusz1",
   });
 
