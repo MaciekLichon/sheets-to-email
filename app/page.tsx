@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import RequestButton from "@/components/requestButton";
 import SignInButton from "@/components/signInButton";
 import SignOutButton from "@/components/signOutButton";
 
@@ -12,6 +13,7 @@ export default async function Home() {
       <main>
         <p>Welcome, {session.user.name}</p>
         <SignOutButton />
+        <RequestButton />
       </main>
     );
   }
