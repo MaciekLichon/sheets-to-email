@@ -1,6 +1,10 @@
 "use client";
 
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import {
+  AllCommunityModule,
+  ModuleRegistry,
+  themeQuartz,
+} from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -11,13 +15,18 @@ interface GridProps {
   handleSelectionChanged: (event: any) => void;
 }
 
+const myTheme = themeQuartz.withParams({
+  backgroundColor: "transparent",
+  wrapperBorder: false,
+});
+
 const Grid = ({ rowData, headers, handleSelectionChanged }: GridProps) => {
   const getColDefs = () => {
     return headers.map((header) => ({ field: header }));
   };
 
   return (
-    <div className="h-full">
+    <div className="box-wrapper rounded-[20px] h-full">
       <AgGridReact
         rowData={rowData}
         columnDefs={getColDefs()}
@@ -27,6 +36,7 @@ const Grid = ({ rowData, headers, handleSelectionChanged }: GridProps) => {
           enableClickSelection: true,
         }}
         autoSizeStrategy={{ type: "fitCellContents" }}
+        theme={myTheme}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import Chip from "./Chip";
 
 interface TextAreaProps {
   headers: string[];
@@ -23,20 +24,18 @@ const TextArea = ({ headers, text, handleTextChange }: TextAreaProps) => {
   };
 
   return (
-    <div className="grid grid-rows-[30px_1fr] gap-2">
+    <div className="box-wrapper p-5 grid grid-rows-[30px_1fr] gap-2">
       <div className="flex items-center gap-2">
-        {headers.map((header) => (
-          <button
-            className="border rounded-full px-2 py-1 text-sm bg-white"
-            key={header}
-            onClick={() => handleChipClick(header)}
-          >
-            {header}
-          </button>
+        {["asdasd", "asdasd"].map((header, index) => (
+          <Chip
+            key={header + index}
+            text={header}
+            handleClick={() => handleChipClick(header)}
+          />
         ))}
       </div>
       <textarea
-        className="border size-full resize-none bg-white rounded-lg p-2"
+        className="size-full resize-none outline-none"
         placeholder="Type your email template here..."
         ref={textareaRef}
         value={text}
