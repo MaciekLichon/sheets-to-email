@@ -26,7 +26,7 @@ const TextArea = ({ headers, text, handleTextChange }: TextAreaProps) => {
   return (
     <div className="box-wrapper p-5 grid grid-rows-[30px_1fr] gap-2">
       <div className="flex items-center gap-2">
-        {["asdasd", "asdasd"].map((header, index) => (
+        {headers.map((header, index) => (
           <Chip
             key={header + index}
             text={header}
