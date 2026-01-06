@@ -4,6 +4,7 @@ body {
   background: #f0f0f0;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  color: black;
 }
 
 .ag-root-wrapper {
