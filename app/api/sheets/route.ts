@@ -1,11 +1,9 @@
 import { google } from "googleapis";
 import { auth } from "@/auth";
-
-type SheetRow = Record<string, string | number | boolean | null>;
+import { SheetRow, SheetsApiResponse } from "@/types/sheets";
 
 export async function GET(req: Request) {
   const session = await auth();
-  console.log(session);
 
   if (!session?.accessToken) {
     return new Response("Unauthorized", { status: 401 });
@@ -23,12 +21,12 @@ export async function GET(req: Request) {
 
   const sheets = google.sheets({ version: "v4", auth: googleAuth });
 
-  const resp = await sheets.spreadsheets.values.get({
+  const sheetsRes = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
     range: "Arkusz1",
   });
 
-  const values = resp.data.values ?? [];
+  const values: string[][] = sheetsRes.data.values ?? [];
 
   if (values.length === 0) {
     return Response.json({
@@ -48,5 +46,10 @@ export async function GET(req: Request) {
     return obj;
   });
 
-  return Response.json({ headers, rows });
+  const res: SheetsApiResponse = {
+    headers,
+    rows,
+  };
+
+  return Response.json(res);
 }

@@ -1,9 +1,10 @@
 "use client";
 
+import { SheetsApiResponse } from "@/types/sheets";
 import { useState } from "react";
 
 interface RequestButtonProps {
-  onGridDataUpdate: (data: any) => void;
+  onGridDataUpdate: (v: SheetsApiResponse) => void;
 }
 
 const RequestButton = ({ onGridDataUpdate }: RequestButtonProps) => {
@@ -24,9 +25,8 @@ const RequestButton = ({ onGridDataUpdate }: RequestButtonProps) => {
       return;
     }
 
-    const data = await res.json();
-    console.log(data);
-    onGridDataUpdate({ rowData: data.rows, headers: data.headers });
+    const data: SheetsApiResponse = await res.json();
+    onGridDataUpdate({ rows: data.rows, headers: data.headers });
   };
 
   return (

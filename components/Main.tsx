@@ -2,30 +2,26 @@
 
 import { useState } from "react";
 import type { SelectionChangedEvent } from "ag-grid-community";
+import { Session } from "next-auth";
 
 import Grid from "./Grid";
 import RequestButton from "./requestButton";
 import SignInButton from "./signInButton";
 import SignOutButton from "./signOutButton";
 import TextComposer from "./TextComposer";
+import { SheetRow, SheetsApiResponse } from "@/types/sheets";
 
 interface MainProps {
-  session: any;
+  session: Session | null;
 }
 
 const Main = ({ session }: MainProps) => {
-  const [rowData, setRowData] = useState<any[]>([]);
-  const [headers, setHeaders] = useState<any[]>([]);
-  const [selectedRow, setSelectedRow] = useState<any>(null);
+  const [rowData, setRowData] = useState<SheetRow[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [selectedRow, setSelectedRow] = useState<SheetRow | null>(null);
 
-  const handleGridDataUpdate = ({
-    rowData,
-    headers,
-  }: {
-    rowData: any[];
-    headers: any[];
-  }) => {
-    setRowData(rowData);
+  const handleGridDataUpdate = ({ headers, rows }: SheetsApiResponse) => {
+    setRowData(rows);
     setHeaders(headers);
   };
 

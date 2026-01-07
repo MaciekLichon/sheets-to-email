@@ -1,13 +1,12 @@
+import { SheetRow } from "@/types/sheets";
+
 interface TextPreviewProps {
   text: string;
-  selectedRow: Record<string, string> | null;
+  selectedRow: SheetRow | null;
 }
 
 const TextPreview = ({ text, selectedRow }: TextPreviewProps) => {
-  const transformText = (
-    text: string,
-    selectedRow: Record<string, string> | null
-  ) =>
+  const transformText = (text: string, selectedRow: SheetRow | null) =>
     text.replace(/{{(.*?)}}/g, (_: string, key: string) => {
       const value = selectedRow?.[key.trim()];
       return value != null ? String(value) : `{{${key}}}`;

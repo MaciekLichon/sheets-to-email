@@ -1,8 +1,10 @@
 "use client";
 
+import { SheetRow } from "@/types/sheets";
 import {
   AllCommunityModule,
   ModuleRegistry,
+  SelectionChangedEvent,
   themeQuartz,
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
@@ -10,9 +12,9 @@ import { AgGridReact } from "ag-grid-react";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface GridProps {
-  rowData: any[];
-  headers: any[];
-  handleSelectionChanged: (event: any) => void;
+  rowData: SheetRow[];
+  headers: string[];
+  handleSelectionChanged: (event: SelectionChangedEvent) => void;
 }
 
 const myTheme = themeQuartz.withParams({
