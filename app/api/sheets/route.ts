@@ -11,6 +11,7 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const sheetId = searchParams.get("sheetId");
+  const includeHeaders = searchParams.get("headers") === "true";
 
   if (!sheetId) {
     return new Response("Bad Request: Missing sheetId", { status: 400 });
@@ -35,7 +36,9 @@ export async function GET(req: Request) {
     });
   }
 
-  const headers = values[0];
+  const headers = includeHeaders
+    ? values[0]
+    : values[0].map((_, index) => `column-${index + 1}`);
   const dataRows = values.slice(1);
 
   const rows: SheetRow[] = dataRows.map((row) => {

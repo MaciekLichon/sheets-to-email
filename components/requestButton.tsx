@@ -8,7 +8,11 @@ interface RequestButtonProps {
 }
 
 const RequestButton = ({ onGridDataUpdate }: RequestButtonProps) => {
-  const [inputValue, setInputValue] = useState("");
+  // const [inputValue, setInputValue] = useState("");
+  const [form, setForm] = useState({
+    link: "",
+    useFirstRowAsHeaders: false,
+  });
 
   const extractSheetId = (url: string) => {
     const regex = /\/d\/([a-zA-Z0-9-_]+)/;
@@ -17,8 +21,10 @@ const RequestButton = ({ onGridDataUpdate }: RequestButtonProps) => {
   };
 
   const handleClick = async () => {
-    const sheetId = extractSheetId(inputValue);
-    const res = await fetch(`/api/sheets?sheetId=${sheetId}`);
+    const sheetId = extractSheetId(form.link);
+    const res = await fetch(
+      `/api/sheets?sheetId=${sheetId}&headers=${form.useFirstRowAsHeaders}`
+    );
 
     if (!res.ok) {
       console.error("Failed to load sheet");
@@ -30,13 +36,25 @@ const RequestButton = ({ onGridDataUpdate }: RequestButtonProps) => {
   };
 
   return (
-    <div>
-      <input
-        className="bg-white"
-        type="text"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-      />
+    <div className="flex items-center gap-2">
+      <div>
+        <input
+          className="bg-white"
+          type="text"
+          value={form.link}
+          onChange={(e) => setForm({ ...form, link: e.target.value })}
+        />
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={form.useFirstRowAsHeaders}
+            onChange={(e) =>
+              setForm({ ...form, useFirstRowAsHeaders: e.target.checked })
+            }
+          />
+          <label className="text-sm">Turn the first row into headers</label>
+        </div>
+      </div>
       <button onClick={handleClick}>Load sheet</button>
     </div>
   );
