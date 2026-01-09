@@ -63,7 +63,7 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
           </label>
         </div>
       </div>
-      <button type="submit" className="border h-full px-2">
+      <button type="submit" className="border h-full p-2 rounded-md">
         Load sheet
       </button>
     </form>
