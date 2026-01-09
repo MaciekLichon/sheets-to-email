@@ -21,3 +21,47 @@ body {
   background: #f0f0f0;
   box-shadow: 4px 4px 10px #d3d3d3, -4px -4px 10px #ffffff;
 }
+
+#main {
+  display: grid;
+  gap: 2rem;
+  grid-template-rows: auto 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+
+  &.variant-1 {
+    grid-template-areas:
+      "navbar navbar"
+      "grid textarea"
+      "grid preview";
+  }
+  &.variant-2 {
+    grid-template-areas:
+      "navbar navbar"
+      "grid grid"
+      "textarea preview";
+  }
+  &.variant-3 {
+    grid-template-areas:
+      "navbar navbar"
+      "textarea grid"
+      "preview grid";
+  }
+  &.variant-4 {
+    grid-template-areas:
+      "navbar navbar"
+      "textarea preview"
+      "grid grid";
+  }
+}
+#navbar {
+  grid-area: navbar;
+}
+#grid {
+  grid-area: grid;
+}
+#textarea {
+  grid-area: textarea;
+}
+#preview {
+  grid-area: preview;
+}

@@ -28,7 +28,7 @@ const Grid = ({ rowData, headers, handleSelectionChanged }: GridProps) => {
   };
 
   return (
-    <div className="box-wrapper rounded-[20px] h-full">
+    <div id="grid" className="box-wrapper rounded-[20px] h-full">
       <AgGridReact
         rowData={rowData}
         columnDefs={getColDefs()}

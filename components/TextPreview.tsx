@@ -13,7 +13,10 @@ const TextPreview = ({ text, selectedRow }: TextPreviewProps) => {
     });
 
   return (
-    <div className="box-wrapper p-5 grid grid-rows-[auto_1fr] gap-1">
+    <div
+      id="preview"
+      className="box-wrapper p-5 grid grid-rows-[auto_1fr] gap-1 overflow-auto"
+    >
       <h2>Preview</h2>
       <div className="whitespace-pre-wrap overflow-auto">
         {transformText(text, selectedRow)}

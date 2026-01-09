@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { SelectionChangedEvent } from "ag-grid-community";
 import { Session } from "next-auth";
+import type { SelectionChangedEvent } from "ag-grid-community";
+
+import { SheetRow, SheetsApiResponse } from "@/types/sheets";
 
 import Grid from "./Grid";
-import RequestButton from "./requestButton";
-import SignInButton from "./signInButton";
-import SignOutButton from "./signOutButton";
-import TextComposer from "./TextComposer";
-import { SheetRow, SheetsApiResponse } from "@/types/sheets";
+import Navbar from "./Navbar/Navbar";
+import TextArea from "./TextArea";
+import TextPreview from "./TextPreview";
+import VariantButton from "./VariantButton";
 
 interface MainProps {
   session: Session | null;
@@ -19,6 +20,8 @@ const Main = ({ session }: MainProps) => {
   const [rowData, setRowData] = useState<SheetRow[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [selectedRow, setSelectedRow] = useState<SheetRow | null>(null);
+  const [rawText, setRawText] = useState("");
+  const [layoutVariant, setLayoutVariant] = useState(1);
 
   const handleGridDataUpdate = ({ headers, rows }: SheetsApiResponse) => {
     setRowData(rows);
@@ -30,27 +33,36 @@ const Main = ({ session }: MainProps) => {
     setSelectedRow(selected && selected.length > 0 ? selected[0].data : null);
   };
 
+  const handleRawTextChange = (newText: string) => {
+    setRawText(newText);
+  };
+
+  const handleLayoutChange = () => {
+    setLayoutVariant((prev) => (prev === 4 ? 1 : prev + 1));
+  };
+
   return (
-    <div className="max-w-5xl mx-auto grid grid-rows-[auto_1fr] gap-10 size-full">
-      {session?.user ? (
-        <div className="flex justify-between items-center">
-          <p>Welcome, {session.user.name}</p>
-          <RequestButton onGridDataUpdate={handleGridDataUpdate} />
-          <SignOutButton />
-        </div>
-      ) : (
-        <div className="text-center">
-          <SignInButton />
-        </div>
-      )}
-      <section className="size-full grid grid-cols-2 gap-10">
-        <Grid
-          rowData={rowData}
-          headers={headers}
-          handleSelectionChanged={handleSelectionChanged}
-        />
-        <TextComposer headers={headers} selectedRow={selectedRow} />
-      </section>
+    <div
+      id="main"
+      className={`variant-${layoutVariant} max-w-5xl mx-auto size-full`}
+    >
+      <Navbar
+        session={session}
+        layoutVariant={layoutVariant}
+        handleLayoutChange={handleLayoutChange}
+        handleGridDataUpdate={handleGridDataUpdate}
+      />
+      <Grid
+        rowData={rowData}
+        headers={headers}
+        handleSelectionChanged={handleSelectionChanged}
+      />
+      <TextArea
+        text={rawText}
+        headers={headers}
+        handleTextChange={handleRawTextChange}
+      />
+      <TextPreview text={rawText} selectedRow={selectedRow} />
     </div>
   );
 };
