@@ -4,7 +4,7 @@ import { logout } from "@/lib/actions/auth";
 
 const SignOutButton = () => {
   return (
-    <button className="border p-2 rounded-md" onClick={() => logout()}>
+    <button className="button-primary" onClick={() => logout()}>
       Sign Out
     </button>
   );

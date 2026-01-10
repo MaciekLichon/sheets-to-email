@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { SheetsApiResponse } from "@/types/sheets";
+import { login } from "@/lib/actions/auth";
 
 interface RequestFormProps {
   onGridDataUpdate: (v: SheetsApiResponse) => void;
@@ -23,10 +24,14 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
     e.preventDefault();
 
     const sheetId = extractSheetId(form.link);
-    console.log(sheetId);
     const res = await fetch(
       `/api/sheets?sheetId=${sheetId}&headers=${form.buildHeaders}`
     );
+
+    if (res.status === 401) {
+      await login();
+      return;
+    }
 
     if (!res.ok) {
       console.error("Failed to load sheet");
@@ -63,7 +68,7 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
           </label>
         </div>
       </div>
-      <button type="submit" className="border h-full p-2 rounded-md">
+      <button type="submit" className="button-primary">
         Load sheet
       </button>
     </form>

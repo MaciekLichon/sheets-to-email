@@ -8,9 +8,9 @@ const VariantButton = ({ variant, handleClick }: VariantButtonProps) => {
     <button
       onClick={handleClick}
       style={{ transform: `rotate(${(variant - 1) * 90}deg)` }}
-      className="size-10 p-2 border rounded-md"
+      className="button-primary size-10 w-fit"
     >
-      <div className="grid gap-0.5 grid-cols-2 grid-rows-2 ">
+      <div className="grid gap-0.5 grid-cols-2 grid-rows-2 h-full">
         <span className="row-span-2 bg-black"></span>
         <span className="bg-black aspect-square"></span>
         <span className="bg-black aspect-square"></span>

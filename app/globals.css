@@ -22,6 +22,10 @@ body {
   box-shadow: 4px 4px 10px #d3d3d3, -4px -4px 10px #ffffff;
 }
 
+.button-primary {
+  @apply h-full p-2 border rounded-md;
+}
+
 #main {
   display: grid;
   gap: 2rem;

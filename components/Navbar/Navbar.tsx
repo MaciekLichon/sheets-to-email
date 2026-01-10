@@ -21,26 +21,17 @@ const Navbar = ({
 }: NavbarProps) => {
   return (
     <nav>
-      {session?.user ? (
-        <div className="grid grid-cols-[1fr_auto_1fr]">
-          <p>LOGO</p>
-          <RequestForm onGridDataUpdate={handleGridDataUpdate} />
-          <div className="flex items-center justify-end">
-            <VariantButton
-              variant={layoutVariant}
-              handleClick={handleLayoutChange}
-            />
-            <SignOutButton />
-          </div>
+      <div className="grid grid-cols-[1fr_auto_1fr]">
+        <p>LOGO</p>
+        <RequestForm onGridDataUpdate={handleGridDataUpdate} />
+        <div className="flex items-center justify-end gap-3">
+          <VariantButton
+            variant={layoutVariant}
+            handleClick={handleLayoutChange}
+          />
+          {session?.user ? <SignOutButton /> : <SignInButton />}
         </div>
-      ) : (
-        <div className="grid grid-cols-[1fr_auto_1fr]">
-          <p>LOGO</p>
-          <div className="grid justify-items-end col-start-3">
-            <SignInButton />
-          </div>
-        </div>
-      )}
+      </div>
     </nav>
   );
 };

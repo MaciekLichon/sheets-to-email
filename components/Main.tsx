@@ -10,7 +10,6 @@ import Grid from "./Grid";
 import Navbar from "./Navbar/Navbar";
 import TextArea from "./TextArea";
 import TextPreview from "./TextPreview";
-import VariantButton from "./VariantButton";
 
 interface MainProps {
   session: Session | null;
