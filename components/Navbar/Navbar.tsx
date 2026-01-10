@@ -20,7 +20,7 @@ const Navbar = ({
   handleGridDataUpdate,
 }: NavbarProps) => {
   return (
-    <nav id="navbar" className="">
+    <nav>
       {session?.user ? (
         <div className="grid grid-cols-[1fr_auto_1fr]">
           <p>LOGO</p>

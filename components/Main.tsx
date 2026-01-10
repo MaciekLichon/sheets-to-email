@@ -42,27 +42,26 @@ const Main = ({ session }: MainProps) => {
   };
 
   return (
-    <div
-      id="main"
-      className={`variant-${layoutVariant} max-w-5xl mx-auto size-full`}
-    >
+    <div className="grid grid-rows-[auto_1fr] max-w-5xl mx-auto size-full">
       <Navbar
         session={session}
         layoutVariant={layoutVariant}
         handleLayoutChange={handleLayoutChange}
         handleGridDataUpdate={handleGridDataUpdate}
       />
-      <Grid
-        rowData={rowData}
-        headers={headers}
-        handleSelectionChanged={handleSelectionChanged}
-      />
-      <TextArea
-        text={rawText}
-        headers={headers}
-        handleTextChange={handleRawTextChange}
-      />
-      <TextPreview text={rawText} selectedRow={selectedRow} />
+      <div id="main" className={`variant-${layoutVariant} overflow-auto mt-5`}>
+        <Grid
+          rowData={rowData}
+          headers={headers}
+          handleSelectionChanged={handleSelectionChanged}
+        />
+        <TextArea
+          text={rawText}
+          headers={headers}
+          handleTextChange={handleRawTextChange}
+        />
+        <TextPreview text={rawText} selectedRow={selectedRow} />
+      </div>
     </div>
   );
 };
