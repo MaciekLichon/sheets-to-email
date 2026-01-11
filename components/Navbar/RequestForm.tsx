@@ -22,17 +22,21 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const extractSheetId = (url: string) => {
-    const regex = /\/d\/([a-zA-Z0-9-_]+)/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
+  const extractFileIds = (url: string) => {
+    const spreadsheetMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    const spreadsheetId = spreadsheetMatch ? spreadsheetMatch[1] : null;
+
+    const gidMatch = url.match(/[?#]gid=([0-9]+)/);
+    const sheetId = gidMatch ? gidMatch[1] : null;
+
+    return { spreadsheetId, sheetId };
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    const sheetId = extractSheetId(form.link);
+    const { spreadsheetId, sheetId } = extractFileIds(form.link);
 
     // if (!sheetId) {
     //   // TODO: handle on server
@@ -41,7 +45,7 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
     // }
 
     const res = await fetch(
-      `/api/sheets?sheetId=${sheetId}&headers=${form.buildHeaders}`
+      `/api/sheets?spreadsheetId=${spreadsheetId}&sheetId=${sheetId}&headers=${form.buildHeaders}`
     );
     const body = await res.json();
 

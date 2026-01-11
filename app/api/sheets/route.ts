@@ -22,21 +22,40 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
+  const spreadsheetId = searchParams.get("spreadsheetId");
   const sheetId = searchParams.get("sheetId");
   const includeHeaders = searchParams.get("headers") === "true";
 
-  if (!sheetId || sheetId === "null" || sheetId === "undefined") {
+  if (
+    !spreadsheetId ||
+    spreadsheetId === "null" ||
+    spreadsheetId === "undefined"
+  ) {
     return generateErrorResponse(400, errorMessages[400]);
+  }
+
+  if (!sheetId || sheetId === "null" || sheetId === "undefined") {
+    return generateErrorResponse(400, "sheetId missing in the URL");
   }
 
   const googleAuth = new google.auth.OAuth2();
   googleAuth.setCredentials({ access_token: session.accessToken });
   const sheets = google.sheets({ version: "v4", auth: googleAuth });
 
+  // TODO: handle in try catch maybe
+  const meta = await sheets.spreadsheets.get({ spreadsheetId: spreadsheetId });
+  const range = meta.data.sheets?.find(
+    (sheet) => sheet.properties?.sheetId === parseInt(sheetId)
+  )?.properties?.title;
+  if (!range) {
+    return generateErrorResponse(400, "invalid sheetId provided");
+  }
+
+  // TODO: handle sheetId error specifically, the above messages and logic and also in the main catch if a wrong range goes in somehow
   try {
     const sheetsRes = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId,
-      range: "Arkusz1",
+      spreadsheetId: spreadsheetId,
+      range: range,
     });
 
     const values: string[][] = sheetsRes.data.values ?? [];
@@ -69,8 +88,8 @@ export async function GET(req: Request) {
     return Response.json(res);
   } catch (error: any) {
     const status = error?.status || error?.code || 500; // fallback 500
-    const message = errorMessages[status] || "Internal Server Error";
+    // const message = errorMessages[status] || "Internal Server Error";
 
-    return generateErrorResponse(status, message);
+    return generateErrorResponse(status, error.message);
   }
 }
