@@ -24,21 +24,29 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
     e.preventDefault();
 
     const sheetId = extractSheetId(form.link);
+
+    // if (!sheetId) {
+    //   // TODO: handle on server
+    //   console.error("Invalid Google Sheets link");
+    //   return;
+    // }
+
     const res = await fetch(
       `/api/sheets?sheetId=${sheetId}&headers=${form.buildHeaders}`
     );
-
-    if (res.status === 401) {
-      await login();
-      return;
-    }
+    const body = await res.json();
 
     if (!res.ok) {
-      console.error("Failed to load sheet");
+      console.log(`Error ${res.status}`);
+      console.log(`Message: ${body.error}`);
+      if (res.status === 401) {
+        await login();
+        return;
+      }
       return;
     }
 
-    const data: SheetsApiResponse = await res.json();
+    const data: SheetsApiResponse = body;
     onGridDataUpdate({ rows: data.rows, headers: data.headers });
   };
 
