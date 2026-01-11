@@ -1,9 +1,9 @@
 import { Session } from "next-auth";
 import { SheetsApiResponse } from "@/types/sheets";
 
-import RequestForm from "../RequestForm";
-import SignOutButton from "../SignOutButton";
-import SignInButton from "../SignInButton";
+import RequestForm from "./RequestForm";
+import SignOutButton from "./SignOutButton";
+import SignInButton from "./SignInButton";
 import VariantButton from "../VariantButton";
 
 interface NavbarProps {
