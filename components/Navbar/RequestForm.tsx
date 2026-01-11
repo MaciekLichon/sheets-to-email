@@ -51,10 +51,9 @@ const RequestForm = ({ onGridDataUpdate }: RequestFormProps) => {
         setLoading(false);
         return;
       }
+
       setIsDialogOpen(true);
       setError({ status: res.status, message: body.error });
-      console.log(`Error ${res.status}`);
-      console.log(`Message: ${body.error}`);
       setLoading(false);
       return;
     }
