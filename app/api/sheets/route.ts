@@ -1,24 +1,13 @@
 import { google } from "googleapis";
 import { auth } from "@/auth";
 import { SheetRow, SheetsApiResponse } from "@/types/sheets";
-
-const errorMessages: { [key: number]: string } = {
-  400: "Bad Request: Missing sheetId", // missing sheetId or completely bad link format (id not extracted)
-  401: "Unauthorized: Invalid or expired Google authentication", // unauthorized, user not logged in or token expired
-  403: "Forbidden: Access to the spreadsheet is denied", // sheet exists but user has no access
-  404: "Not Found: Spreadsheet not found", // valid sheets link but sheet with such id not found
-  429: "Too Many Requests: Google API rate limit exceeded", // rate limit exceeded
-};
-
-const generateErrorResponse = (status: number, message: string) => {
-  return Response.json({ error: message }, { status });
-};
+import { errorResponse } from "@/lib/errors/error-response";
 
 export async function GET(req: Request) {
   const session = await auth();
 
   if (!session?.accessToken) {
-    return generateErrorResponse(401, errorMessages[401]);
+    return errorResponse("UNAUTHORIZED");
   }
 
   const { searchParams } = new URL(req.url);
@@ -31,28 +20,28 @@ export async function GET(req: Request) {
     spreadsheetId === "null" ||
     spreadsheetId === "undefined"
   ) {
-    return generateErrorResponse(400, errorMessages[400]);
+    return errorResponse("MISSING_SPREADSHEET_ID");
   }
 
   if (!sheetId || sheetId === "null" || sheetId === "undefined") {
-    return generateErrorResponse(400, "sheetId missing in the URL");
+    return errorResponse("MISSING_SHEET_ID");
   }
 
   const googleAuth = new google.auth.OAuth2();
   googleAuth.setCredentials({ access_token: session.accessToken });
   const sheets = google.sheets({ version: "v4", auth: googleAuth });
 
-  // TODO: handle in try catch maybe
-  const meta = await sheets.spreadsheets.get({ spreadsheetId: spreadsheetId });
-  const range = meta.data.sheets?.find(
-    (sheet) => sheet.properties?.sheetId === parseInt(sheetId)
-  )?.properties?.title;
-  if (!range) {
-    return generateErrorResponse(400, "invalid sheetId provided");
-  }
-
-  // TODO: handle sheetId error specifically, the above messages and logic and also in the main catch if a wrong range goes in somehow
   try {
+    const meta = await sheets.spreadsheets.get({
+      spreadsheetId: spreadsheetId,
+    });
+    const range = meta.data.sheets?.find(
+      (sheet) => sheet.properties?.sheetId === parseInt(sheetId)
+    )?.properties?.title;
+    if (!range) {
+      return errorResponse("INVALID_SHEET_ID");
+    }
+
     const sheetsRes = await sheets.spreadsheets.values.get({
       spreadsheetId: spreadsheetId,
       range: range,
@@ -87,9 +76,25 @@ export async function GET(req: Request) {
 
     return Response.json(res);
   } catch (error: any) {
-    const status = error?.status || error?.code || 500; // fallback 500
-    // const message = errorMessages[status] || "Internal Server Error";
+    const status = error?.status || error?.code;
 
-    return generateErrorResponse(status, error.message);
+    // if (status === 400) {
+    //   return errorResponse("INVALID_RANGE");
+    // }
+
+    if (status === 403) {
+      return errorResponse("FORBIDDEN");
+    }
+
+    // TODO: check if might be replaced with INVALID_SPREADSHEET_ID
+    if (status === 404) {
+      return errorResponse("NOT_FOUND");
+    }
+
+    if (status === 429) {
+      return errorResponse("RATE_LIMITED");
+    }
+
+    return errorResponse("INTERNAL_ERROR");
   }
 }
