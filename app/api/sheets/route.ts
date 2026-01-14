@@ -13,17 +13,13 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const spreadsheetId = searchParams.get("spreadsheetId");
   const sheetId = searchParams.get("sheetId");
-  const includeHeaders = searchParams.get("headers") === "true";
+  const getHeadersFromData = searchParams.get("headers") === "true";
 
-  if (
-    !spreadsheetId ||
-    spreadsheetId === "null" ||
-    spreadsheetId === "undefined"
-  ) {
+  if (!isDefinedString(spreadsheetId)) {
     return errorResponse("MISSING_SPREADSHEET_ID");
   }
 
-  if (!sheetId || sheetId === "null" || sheetId === "undefined") {
+  if (!isDefinedString(sheetId)) {
     return errorResponse("MISSING_SHEET_ID");
   }
 
@@ -35,9 +31,11 @@ export async function GET(req: Request) {
     const meta = await sheets.spreadsheets.get({
       spreadsheetId: spreadsheetId,
     });
+
     const range = meta.data.sheets?.find(
       (sheet) => sheet.properties?.sheetId === parseInt(sheetId)
     )?.properties?.title;
+
     if (!range) {
       return errorResponse("INVALID_SHEET_ID");
     }
@@ -48,53 +46,53 @@ export async function GET(req: Request) {
     });
 
     const values: string[][] = sheetsRes.data.values ?? [];
-
-    if (values.length === 0) {
-      return Response.json({
-        headers: [],
-        rows: [],
-      });
-    }
-
-    const headers = includeHeaders
-      ? values[0]
-      : values[0].map((_, index) => `column-${index + 1}`);
-    const dataRows = values.slice(1);
-
-    const rows: SheetRow[] = dataRows.map((row) => {
-      const obj: SheetRow = {};
-      headers?.forEach((header, index) => {
-        obj[header] = row[index] ?? null;
-      });
-      return obj;
-    });
-
-    const res: SheetsApiResponse = {
-      headers,
-      rows,
-    };
-
-    return Response.json(res);
+    return Response.json(parseSheetValues(values, getHeadersFromData));
   } catch (error: any) {
     const status = error?.status || error?.code;
 
-    // if (status === 400) {
-    //   return errorResponse("INVALID_RANGE");
-    // }
-
-    if (status === 403) {
-      return errorResponse("FORBIDDEN");
+    switch (status) {
+      // case 400:
+      //   return errorResponse("INVALID_RANGE");
+      case 403:
+        return errorResponse("FORBIDDEN");
+      case 404:
+        // TODO: check if might be replaced with INVALID_SPREADSHEET_ID
+        return errorResponse("NOT_FOUND");
+      case 429:
+        return errorResponse("RATE_LIMITED");
+      default:
+        return errorResponse("INTERNAL_ERROR");
     }
-
-    // TODO: check if might be replaced with INVALID_SPREADSHEET_ID
-    if (status === 404) {
-      return errorResponse("NOT_FOUND");
-    }
-
-    if (status === 429) {
-      return errorResponse("RATE_LIMITED");
-    }
-
-    return errorResponse("INTERNAL_ERROR");
   }
 }
+
+const isDefinedString = (value: string | null): value is string =>
+  !!value && value !== "null" && value !== "undefined";
+
+const parseSheetValues = (
+  values: string[][],
+  getHeadersFromData: boolean
+): SheetsApiResponse => {
+  if (values.length === 0) {
+    return {
+      headers: [],
+      rows: [],
+    };
+  }
+
+  const [headersRow, ...rest] = values;
+  const headers = getHeadersFromData
+    ? headersRow
+    : headersRow.map((_, index) => `column-${index + 1}`);
+  const dataRows = getHeadersFromData ? rest : values;
+
+  const rows: SheetRow[] = dataRows.map((row) => {
+    const obj: SheetRow = {};
+    headers?.forEach((header, index) => {
+      obj[header] = row[index] ?? null;
+    });
+    return obj;
+  });
+
+  return { headers, rows };
+};
