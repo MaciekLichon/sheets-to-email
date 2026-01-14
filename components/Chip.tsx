@@ -6,7 +6,7 @@ interface ChipProps {
 const Chip = ({ text, handleClick }: ChipProps) => {
   return (
     <button
-      className="chip-shadow px-2 py-1 text-sm rounded-full"
+      className="chip-shadow shrink-0 px-2 py-1 text-sm rounded-full"
       onClick={handleClick}
     >
       {text}

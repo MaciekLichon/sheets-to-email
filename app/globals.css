@@ -17,9 +17,19 @@ body {
   box-shadow: inset 6px 6px 18px #d3d3d3, inset -6px -6px 18px #ffffff;
 }
 
+@utility chip-container-mask {
+  mask-image: linear-gradient(
+    90deg,
+    transparent 5px,
+    black 20px,
+    black calc(100% - 20px),
+    transparent calc(100% - 5px)
+  );
+}
+
 @utility chip-shadow {
   background: #f0f0f0;
-  box-shadow: 4px 4px 10px #d3d3d3, -4px -4px 10px #ffffff;
+  box-shadow: 3px 3px 6px #d3d3d3, -3px -3px 6px #ffffff;
 }
 
 .button-primary {

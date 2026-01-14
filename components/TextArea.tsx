@@ -24,21 +24,20 @@ const TextArea = ({ headers, text, handleTextChange }: TextAreaProps) => {
   };
 
   return (
-    <div
-      id="textarea"
-      className="box-wrapper p-5 grid grid-rows-[30px_1fr] gap-2"
-    >
-      <div className="flex items-center gap-2">
-        {headers.map((header, index) => (
-          <Chip
-            key={header + index}
-            text={header}
-            handleClick={() => handleChipClick(header)}
-          />
-        ))}
+    <div id="textarea" className="box-wrapper grid grid-rows-[auto_1fr]">
+      <div className="chip-container-mask p-5 pb-2 overflow-auto">
+        <div className="flex items-center gap-2 flex-nowrap min-h-7">
+          {headers.map((header, index) => (
+            <Chip
+              key={header + index}
+              text={header}
+              handleClick={() => handleChipClick(header)}
+            />
+          ))}
+        </div>
       </div>
       <textarea
-        className="size-full resize-none outline-none"
+        className="size-full resize-none outline-none px-5 pb-5"
         placeholder="Type your email template here..."
         ref={textareaRef}
         value={text}
